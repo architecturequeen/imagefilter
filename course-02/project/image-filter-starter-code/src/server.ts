@@ -1,6 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
+import fs from 'fs';
+
 
 (async () => {
 
@@ -35,8 +37,11 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
     if (req.query.image_url) {
       if (req.query.image_url.match(/\.(jpeg|jpg|gif|png)$/) != null){
         filterImageFromURL(req.query.image_url).then((data)=>{
-          res.send(data);
+          res.on("finish", ()=>{
+          fs.unlinkSync(data);
         })
+          res.sendFile(data);
+        });
       }
       else {
         res.status(400).send('Invalid image url')
