@@ -37,7 +37,7 @@ import fs from 'fs';
         filterImageFromURL(req.query.image_url)
           .then(data => {
             res.on('finish', () => {
-              fs.unlinkSync(data);
+              deleteLocalFiles([data]);
             });
             res.status(200).sendFile(data);
           })
