@@ -34,12 +34,17 @@ import fs from 'fs';
   app.get('/filteredimage', async (req, res) => {
     if (req.query.image_url) {
       if (req.query.image_url.match(/\.(jpeg|jpg|gif|png)$/) != null) {
-        filterImageFromURL(req.query.image_url).then(data => {
-          res.on('finish', () => {
-            fs.unlinkSync(data);
+        filterImageFromURL(req.query.image_url)
+          .then(data => {
+            res.on('finish', () => {
+              fs.unlinkSync(data);
+            });
+            res.status(200).sendFile(data);
+          })
+          .catch(e => {
+            console.error('error', e);
+            res.status(422).send('Sorry, something went wrong');
           });
-          res.sendFile(data);
-        });
       } else {
         res.status(400).send('Invalid image url');
       }
